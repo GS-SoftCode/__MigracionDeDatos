@@ -1,0 +1,12 @@
+Ruta de archivos
+C:\migrar
+
+Nombre de carpeta: migrar
+
+Nombres de los archivos:
+credito.xlsx
+credito_tabla.xlsx
+cuentas.xlsx
+plant_dep_plazo_tabla.xlsx
+plant_deposi_plazo.xlsx
+socios.xlsx
