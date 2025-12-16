@@ -55,9 +55,6 @@ def first_char(val):
 
 # Insertar dataframe en BD ----------------------------------------------------------------------------------------
 for index, row in df.iterrows():
-    if row['codigo del socio'] == None:
-            print("Error en campo numero" + row['codigo del socio'])
-    insert_query = f"INSERT INTO sgf_socio (cod_socio, cod_tipo_socio, fec_ingreso, cod_tipo_persona, cod_tipo_id, num_id, cod_parroquia, cod_canton, cod_provincia, cod_pais, nom_socio, ape_socio, cod_act_economica, cod_instruccion, nom_juridico, sts_sexo, fec_nacimiento, sts_civil, sts_socio, nom_representante_legal, ape_representante_legal, cod_tipo_id_rep_legal, num_id_rel_legal, nom_conyuge, ape_conyuge, fec_nac_con, cod_tipo_id_con, num_id_con, dir_dom, dir2_dom, tel_dom, tel_trabajo, tel_celular, sts_operador_cel, dir_correo, img_foto, txt_link, fec_usrmod, cod_usrmod, nom_beneficiario, ape_beneficiario, cod_tipo_id_ben, num_id_ben, dir_trabajo, dir2_trabajo, cod_tipo_sangre, val_ingreso_mensual, fec_solicitud, cod_origen_ingresos, val_activo, val_pasivo, val_patrimonio, val_gastos_mensuales, cod_causal_vinculacion, fec_causal, cod_tipo_vivienda, val_vivienda, num_tiempo_trabajo, num_cargas_familiares, cod_socio_conyuge, cod_socio_vinculado, cod_relacion, txt_observacion_relacion, cod_oficina, txt_lugar_trabajo, cod_nivel_estudios, sts_rep_asamblea, cod_parroquia_nac, cod_canton_nac, cod_provincia_nac, cod_pais_nac, cod_pais_dom, cod_barrio, sts_pep, sts_fuente_ingresos, sts_actualiza_web, fec_reingreso, sts_consejo_administracion, sts_consejo_vigilancia, sts_asamblea_gen_repres, sts_edu_financiera, cod_etnia, sts_representante_legal) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
     # Transformar fechas.
     fec_ingreso = row['fec_ingreso'].strftime('%Y-%m-%d') if not pd.isnull(row['fec_ingreso']) else None
@@ -93,7 +90,40 @@ for index, row in df.iterrows():
     sts_edu_financiera = first_char(row['sts_edu_financiera'])
     sts_representante_legal = first_char(row['sts_representante_legal'])
 
-    data = (row['codigo del socio'], tipo_socio, fec_ingreso, tipo_persona, tipo_identificacion, row['Numero de identificacion o cedula'], row['cod_parroquia'], row['cod_canton'], row['cod_provincia'], row['cod_pais'], row['nombre del socio'], row['apellidos del socio'], row['cod_act_economica'], row['cod_instruccion'], row['nom_juridico'], sexo, fec_nacimiento, estado_civil, sts_socio, row['nom_representante_legal'], row['ape_representante_legal'], id_rep_legal, row['num_id_rel_legal'], row['nombre_conyuge'], row['ape_conyuge'], fec_nac_con, cod_tipo_id, row['num_id_con'], row['direccion'], row['dir2_dom'], row['Telefono'], row['TelefonoTrab'], row['Celular'], sts_operador_cell, row['dir_correo'], image, row['txt_link'], fec_usrmod, row['cod_usrmod'], row['nom_beneficiario'], row['ape_beneficiario'], cod_tipo_id_ben, row['num_id_ben'], row['dir_trabajo'], row['dir2_trabajo'], row['cod_tipo_sangre'], row['val_ingreso_mensual'], fec_solicitud, cod_origen_ingresos, row['val_activo'], row['val_pasivo'], row['val_patrimonio'], row['val_gastos_mensuales'], row['cod_causal_vinculacion'], fec_causal, cod_tipo_vivienda, row['val_vivienda'], row['num_tiempo_trabajo'], row['num_cargas_familiares'], row['cod_socio_conyuge'], row['cod_socio_vinculado'], row['cod_relacion'], row['txt_observacion_relacion'], row['cod_oficina'], row['txt_lugar_trabajo'], cod_nivel_estudios, sts_rep_asamblea, row['cod_parroquia_nac'], row['cod_canton_nac'], row['cod_provincia_nac'], row['cod_pais_nac'], row['cod_pais_dom'], row['cod_barrio'], sts_pep, sts_fuente_ingresos, sts_actualiza_web, fec_reingreso, sts_consejo_administracion, sts_consejo_vigilancia, sts_asamblea_gen_repres, sts_edu_financiera, row['cod_etnia'], sts_representante_legal)
+    data = (row['codigo del socio'], tipo_socio, fec_ingreso, tipo_persona, tipo_identificacion,
+            row['Numero de identificacion o cedula'], row['cod_parroquia'], row['cod_canton'], row['cod_provincia'], row['cod_pais'],
+            row['nombre del socio'], row['apellidos del socio'], row['cod_act_economica'], row['cod_instruccion'], row['nom_juridico'],
+            sexo, fec_nacimiento, estado_civil, sts_socio, row['nom_representante_legal'],
+            row['ape_representante_legal'], id_rep_legal, row['num_id_rel_legal'], row['nombre_conyuge'], row['ape_conyuge'],
+            fec_nac_con, cod_tipo_id, row['num_id_con'], row['direccion'], row['dir2_dom'],
+            row['Telefono'], row['TelefonoTrab'], row['Celular'], sts_operador_cell, row['dir_correo'],
+            image, row['txt_link'], fec_usrmod, row['cod_usrmod'], row['nom_beneficiario'],
+            row['ape_beneficiario'], cod_tipo_id_ben, row['num_id_ben'], row['dir_trabajo'], row['dir2_trabajo'],
+            row['cod_tipo_sangre'], row['val_ingreso_mensual'], fec_solicitud, cod_origen_ingresos, row['val_activo'],
+            row['val_pasivo'], row['val_patrimonio'], row['val_gastos_mensuales'], row['cod_causal_vinculacion'], fec_causal,
+            cod_tipo_vivienda, row['val_vivienda'], row['num_tiempo_trabajo'], row['num_cargas_familiares'],
+            row['cod_socio_conyuge'], row['cod_socio_vinculado'], row['cod_relacion'], row['txt_observacion_relacion'],
+            row['cod_oficina'], row['txt_lugar_trabajo'], cod_nivel_estudios, sts_rep_asamblea, row['cod_parroquia_nac'],
+            row['cod_canton_nac'], row['cod_provincia_nac'], row['cod_pais_nac'], row['cod_pais_dom'], row['cod_barrio'],
+            sts_pep, sts_fuente_ingresos, sts_actualiza_web, fec_reingreso, sts_consejo_administracion,
+            sts_consejo_vigilancia, sts_asamblea_gen_repres, sts_edu_financiera, row['cod_etnia'], sts_representante_legal
+            )
+    
+    columnas = ['cod_socio', 'cod_tipo_socio', 'fec_ingreso', 'cod_tipo_persona', 'cod_tipo_id', 'num_id', 'cod_parroquia', 'cod_canton', 'cod_provincia', 'cod_pais',
+                'nom_socio', 'ape_socio', 'cod_act_economica', 'cod_instruccion', 'nom_juridico', 'sts_sexo', 'fec_nacimiento', 'sts_civil', 'sts_socio',
+                'nom_representante_legal', 'ape_representante_legal', 'cod_tipo_id_rep_legal', 'num_id_rel_legal', 'nom_conyuge', 'ape_conyuge', 'fec_nac_con',
+                'cod_tipo_id_con', 'num_id_con', 'dir_dom', 'dir2_dom', 'tel_dom', 'tel_trabajo', 'tel_celular', 'sts_operador_cel', 'dir_correo', 'img_foto',
+                'txt_link', 'fec_usrmod', 'cod_usrmod', 'nom_beneficiario', 'ape_beneficiario', 'cod_tipo_id_ben', 'num_id_ben', 'dir_trabajo', 'dir2_trabajo',
+                'cod_tipo_sangre', 'val_ingreso_mensual', 'fec_solicitud', 'cod_origen_ingresos', 'val_activo', 'val_pasivo', 'val_patrimonio', 'val_gastos_mensuales',
+                'cod_causal_vinculacion', 'fec_causal', 'cod_tipo_vivienda', 'val_vivienda', 'num_tiempo_trabajo', 'num_cargas_familiares', 'cod_socio_conyuge',
+                'cod_socio_vinculado', 'cod_relacion', 'txt_observacion_relacion', 'cod_oficina', 'txt_lugar_trabajo', 'cod_nivel_estudios', 'sts_rep_asamblea',
+                'cod_parroquia_nac', 'cod_canton_nac', 'cod_provincia_nac', 'cod_pais_nac', 'cod_pais_dom', 'cod_barrio', 'sts_pep', 'sts_fuente_ingresos',
+                'sts_actualiza_web', 'fec_reingreso', 'sts_consejo_administracion', 'sts_consejo_vigilancia', 'sts_asamblea_gen_repres', 'sts_edu_financiera',
+                'cod_etnia', 'sts_representante_legal'
+                ]
+    
+    # El query para insertar, usando las columnas y aplicandole el valor %s por cada columna. 
+    insert_query = f"INSERT INTO sgf_socio ({', '.join(columnas)}) VALUES ({', '.join(['%s']*len(columnas))})"
     
     cursor.execute(insert_query, data)
     conn.commit()
@@ -102,4 +132,4 @@ cursor.close()
 conn.close()
 
 # Confirmación en Consola ----------------------------------------------------------------------------------------
-print("✅ Datos insertados exitosamente.")  
+print("✅ Datos insertados exitosamente.")
