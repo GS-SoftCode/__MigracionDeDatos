@@ -5,10 +5,10 @@ import os
 # Configuración de la conexión a PostgreSQL
 db_config = {
     'host': 'localhost',
-    'port': '5432',  # Puerto de PostgreSQL
+    'port': '5431',  # Puerto de PostgreSQL
     'user': 'postgres',
-    'password': 'dba',
-    'dbname': 'C_Megia'
+    'password': 'Ns6705K5',
+    'dbname': 'TEST_DB'
 }
 
 conn = psycopg2.connect(**db_config)
@@ -21,15 +21,13 @@ sheet_name = 'Hoja1'  # Cambia esto al nombre de la hoja que deseas importar
 
 df = pd.read_excel(dep_plazo_tabla, sheet_name=sheet_name)
 
-val_numeric= ['val_capital', 'val_interes', 'val_tasa_interes', 'val_impuesto', 'cod_oficina_pago', 'num_transaccion_pago', 'val_saldo_deposito', 'val_saldo_interes', 'val_saldo_impuesto']
+val_numeric= ['val_capital', 'val_interes', 'val_tasa_interes', 'val_impuesto', 'cod_oficina_pago', 'num_transaccion_pago',
+              'val_saldo_deposito', 'val_saldo_interes', 'val_saldo_impuesto'
+              ]
 df[val_numeric] = df[val_numeric].fillna(0)
 
 # ----------------------------------------------------------------------------------------
-val_string= [ 'sts_prestamo', 'sts_tipo_cuota', 'sts_tipo_tasa', 'txt_referencia', 'sts_encaje',
-             'sts_certificado', 'sts_ahorro', 'sts_seguro', 'sts_tipo_credito', 'cod_cuenta_contable',
-             'cod_tipo_operacion', 'cod_obj_fideicomiso', 'cod_linea_credito', 'cod_clase_credito',
-             'sts_operacion', 'cod_situacion_operacion', 'cod_destino_financiero', 'cod_forma_cancelacion'
-             ]
+val_string= ['sts_dep_plazo_tabla', 'txt_referencia']
 df[val_string] = df[val_string].fillna('')
 # ----------------------------------------------------------------------------------------
 

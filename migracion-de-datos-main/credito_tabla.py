@@ -3,13 +3,13 @@ import psycopg2
 import os
 from datetime import date
 
-# Configuración de la conexión a PostgreSQL
+# Configuración de conexión a PostgreSQL --------------------------------------------------------------------------
 db_config = {
-    'host': 'localhost',
+    'host': 'localhost', # Dirección del servidor PostgreSQL
     'port': '5431',  # Puerto de PostgreSQL
-    'user': 'postgres',
-    'password': 'Ns6705K5',
-    'dbname': 'TEST_DB'
+    'user': 'postgres', # Usuario
+    'password': 'Ns6705K5', # Contraseña del servidor PostgreSQL
+    'dbname': 'TEST_DB' # Nombre de la BD
 }
 
 # Conexión
@@ -36,36 +36,57 @@ val_numeric = [
 df[val_numeric] = df[val_numeric].fillna(0)
 # ----------------------------------------------------------------------------------------
 # Columnas string: reemplazar NaN por ''
-val_string= ['sts_credito_tabla P PAGADO V VIGENTE', 'cod_cuenta_contable']
+val_string= ['sts_credito_tabla', 'cod_cuenta_contable']
 df[val_string] = df[val_string].fillna('')
 # ----------------------------------------------------------------------------------------
 
+# Corregir fechas -------------------------------------------------------------------------------------------------
+df['fec_vencimiento'] = pd.to_datetime(df['fec_vencimiento'], errors='coerce')
+df['fec_usrmod'] = pd.to_datetime(df['fec_usrmod'], errors='coerce')
+df['fec_ult_pago'] = pd.to_datetime(df['fec_ult_pago'], errors='coerce')
+df['fec_inicio'] = pd.to_datetime(df['fec_inicio'], errors='coerce')
+
+
+# Helpers similares a `credito.py`
+def first_char(val):
+    if pd.isnull(val):
+        return ''
+    s = str(val)
+    return s[0] if s else ''
+
+def safe_str(val):
+    return '' if pd.isnull(val) else str(val)
+
+
 # Iterar sobre filas
 for index, row in df.iterrows():
-    # Transformar fechas a tipo date (excepto fec_inicio, que se elimina)
-    fec_vencimiento = row['fec_vencimiento'].date() if not pd.isna(row['fec_vencimiento']) else None
-    fec_usrmod = row['fec_usrmod'].date() if not pd.isna(row['fec_usrmod']) else None
-    fec_ult_pago = row['fec_ult_pago'].date() if not pd.isna(row['fec_ult_pago']) else None
-    fec_inicio = row['fec_inicio'].date() if not pd.isna(row['fec_inicio']) else None
+    # Transformar fechas a string YYYY-MM-DD
+    fec_vencimiento = row['fec_vencimiento'].strftime('%Y-%m-%d') if not pd.isnull(row['fec_vencimiento']) else None
+    fec_usrmod = row['fec_usrmod'].strftime('%Y-%m-%d') if not pd.isnull(row['fec_usrmod']) else None
+    fec_ult_pago = row['fec_ult_pago'].strftime('%Y-%m-%d') if not pd.isnull(row['fec_ult_pago']) else None
+    fec_inicio = row['fec_inicio'].strftime('%Y-%m-%d') if not pd.isnull(row['fec_inicio']) else None
+    # Fallback para fec_inicio
+    if fec_inicio is None:
+        fec_inicio = fec_vencimiento or date.today().strftime('%Y-%m-%d')
 
-    valor = str(row['sts_credito_tabla P PAGADO V VIGENTE'])
-    sts_credito_tabla = valor[0] if valor else ''  # solo 1 carácter, vacío si la celda está vacía
+    sts_credito_tabla = first_char(row['sts_credito_tabla'])
+    cod_cuenta_contable = safe_str(row['cod_cuenta_contable'])
 
-    # Query INSERT con 39 columnas
-    insert_query = """
-    INSERT INTO sgf_credito_tabla (
-        cod_producto, cod_cuenta, num_cuota, val_capital, val_interes, val_tasa_interes,
-        val_gastos, val_gestion_cobro, val_ahorro, val_certificado, val_otros, val_impuesto,
-        sts_credito_tabla, fec_inicio, fec_vencimiento, txt_referencia, fec_usrmod, val_seguro,
-        val_notificacion, val_multa, val_saldo_capital, val_saldo_interes, val_saldo_gestion_cobro,
-        val_saldo_ahorro, val_saldo_certificado, val_saldo_otros, val_saldo_impuesto,
-        val_saldo_seguro, val_saldo_notificacion, fec_ult_pago, val_saldo_multa, val_capital_mora,
-        num_dias_mora, val_saldo_mora, val_edificio, val_saldo_edificio, val_fondo, val_saldo_fondo,
-        cod_usrmod, val_capital_vencido, cod_cuenta_contable
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
+    # Columnas y query construidos con el mismo orden que data
+    columns = [
+        'cod_producto', 'cod_cuenta', 'num_cuota', 'val_capital', 'val_interes', 'val_tasa_interes',
+        'val_gastos', 'val_gestion_cobro', 'val_ahorro', 'val_certificado', 'val_otros', 'val_impuesto',
+        'sts_credito_tabla', 'fec_inicio', 'fec_vencimiento', 'txt_referencia', 'fec_usrmod', 'val_seguro',
+        'val_notificacion', 'val_multa', 'val_saldo_capital', 'val_saldo_interes', 'val_saldo_gestion_cobro',
+        'val_saldo_ahorro', 'val_saldo_certificado', 'val_saldo_otros', 'val_saldo_impuesto',
+        'val_saldo_seguro', 'val_saldo_notificacion', 'fec_ult_pago', 'val_saldo_multa', 'val_capital_mora',
+        'num_dias_mora', 'val_saldo_mora', 'val_edificio', 'val_saldo_edificio', 'val_fondo', 'val_saldo_fondo',
+        'cod_usrmod', 'val_capital_vencido', 'cod_cuenta_contable'
+    ]
 
-    # Valores para el INSERT (40 valores)
+    placeholders = ', '.join(['%s'] * len(columns))
+    insert_query = f"INSERT INTO sgf_credito_tabla ({', '.join(columns)}) VALUES ({placeholders})"
+
     data = (
         row['cod_producto'], row['cod_cuenta'], row['num_cuota'], row['val_capital'], row['val_interes'],
         row['val_tasa_interes'], row['val_gastos'], row['val_gestion_cobro'], row['val_ahorro'],
@@ -76,10 +97,9 @@ for index, row in df.iterrows():
         row['val_saldo_seguro'], row['val_saldo_notificacion'], fec_ult_pago,
         row['val_saldo_multa'], row['val_capital_mora'], row['num_dias_mora'], row['val_saldo_mora'],
         row['val_edificio'], row['val_saldo_edificio'], row['val_fondo'], row['val_saldo_fondo'],
-        row['cod_usrmod'], row['val_capital_vencido'], row['cod_cuenta_contable']
+        row['cod_usrmod'], row['val_capital_vencido'], cod_cuenta_contable
     )
 
-    # Ejecutar INSERT
     cursor.execute(insert_query, data)
     conn.commit()
 
